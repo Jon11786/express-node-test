@@ -4,6 +4,7 @@ import {
 import superagent from 'superagent';
 import { Server } from 'node:net';
 import { verify } from 'argon2';
+import { faker } from '@faker-js/faker';
 import app from '../../../src';
 import db from '../../../src/db/connection';
 
@@ -25,7 +26,7 @@ describe('POST /register', () => {
 
   it('returns 201 and created user', async () => {
     const payload = {
-      name: 'Jeff', email: 'jeff@example.com', password: '1234abcdT', type: 'student',
+      name: faker.person.fullName(), email: faker.internet.email(), password: faker.internet.password(), type: 'student',
     };
 
     const response = await superagent
