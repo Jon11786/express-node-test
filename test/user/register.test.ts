@@ -32,7 +32,7 @@ describe('POST /register', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
-      id: expect.any(String),
+      id: expect.any(Number),
       name: payload.name,
       email: payload.email,
     });

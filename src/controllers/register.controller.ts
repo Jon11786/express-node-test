@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import RegisterSchema from '../validation/register.schema';
+import { create } from '../services/user.service';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function register(req: Request, res: Response) {
@@ -9,5 +10,7 @@ export async function register(req: Request, res: Response) {
     return res.status(422).json({ errors: parsedParams.error.issues });
   }
 
-  return res.status(201).json(parsedParams);
+  const newUser = await create(parsedParams.data);
+
+  return res.status(201).json(newUser);
 }
