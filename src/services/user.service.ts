@@ -1,11 +1,14 @@
+import { hash } from 'argon2';
 import { CreatedUser, NewUser } from '../types/user';
 import { createUser } from '../repositories/user.repository';
 
 export async function create(input: NewUser): Promise<CreatedUser> {
+  const passwordHash = await hash(input.password);
+
   const user: NewUser = {
     name: input.name,
     email: input.email,
-    password: input.password,
+    password: passwordHash,
   };
 
   const createdUser = await createUser(user);

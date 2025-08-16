@@ -3,7 +3,9 @@ import {
 } from 'vitest';
 import superagent from 'superagent';
 import { Server } from 'node:net';
+import { verify } from 'argon2';
 import app from '../../src';
+import db from '../../src/db/connection';
 
 let server: Server;
 let baseUrl: string;
@@ -37,6 +39,12 @@ describe('POST /register', () => {
       email: payload.email,
     });
     expect(response.body).not.toHaveProperty('password');
+
+    const row = db.prepare<{ id: number }, { id: number; name: string; email: string; password: string }>('SELECT id, name, email, password FROM users WHERE id = ?').get(response.body.id);
+    expect(row).toBeDefined();
+    expect(row!.password).not.toBe(payload.password);
+    const verified = await verify(row!.password, payload.password);
+    expect(verified).toBe(true);
   });
 
   it('returns 400 on malformed data', async () => {
