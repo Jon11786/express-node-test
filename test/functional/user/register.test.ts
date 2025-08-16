@@ -4,8 +4,8 @@ import {
 import superagent from 'superagent';
 import { Server } from 'node:net';
 import { verify } from 'argon2';
-import app from '../../src';
-import db from '../../src/db/connection';
+import app from '../../../src';
+import db from '../../../src/db/connection';
 
 let server: Server;
 let baseUrl: string;
@@ -24,7 +24,9 @@ describe('POST /register', () => {
   });
 
   it('returns 201 and created user', async () => {
-    const payload = { name: 'Jeff', email: 'jeff@example.com', password: '1234abcdT' };
+    const payload = {
+      name: 'Jeff', email: 'jeff@example.com', password: '1234abcdT', type: 'student',
+    };
 
     const response = await superagent
       .post(`${baseUrl}/register`)
@@ -37,6 +39,7 @@ describe('POST /register', () => {
       id: expect.any(Number),
       name: payload.name,
       email: payload.email,
+      type: payload.type,
     });
     expect(response.body).not.toHaveProperty('password');
 
@@ -67,18 +70,27 @@ describe('POST /register', () => {
     expect(response.status).toBe(415);
   });
 
-  const cases: [string, any][] = [
-    ['missing name', { email: 'x@example.com', password: 'Abcdefg1' }],
-    ['bad email', { name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1' }],
-    ['weak password', { name: 'Jeff', email: 'j@example.com', password: 'abc' }],
+  const cases: [string, any, string][] = [
+    ['missing name', { email: 'x@example.com', password: 'Abcdefg1', type: 'student' }, 'Invalid input: expected string, received undefined'],
+    ['bad email', {
+      name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1', type: 'student',
+    }, 'Invalid email address'],
+    ['weak password', {
+      name: 'Jeff', email: 'j@example.com', password: 'abc', type: 'student',
+    }, 'Too small: expected string to have >=8 characters'],
+    ['bad type', {
+      name: 'Jeff', email: 'j@example.com', password: 'Abcdefg1', type: 'baker',
+    }, 'Invalid option: expected one of "student"|"teacher"|"parent"|"private_tutor"'],
   ];
 
-  test.each(cases)('%s returns status 422', async (_label, payload) => {
+  test.each(cases)('%s returns status 422', async (_label, payload, errorMessage) => {
     const response = await superagent
       .post(`${baseUrl}/register`)
       .set('Content-Type', 'application/json')
       .send(payload).ok(() => true);
 
     expect(response.status).toBe(422);
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe(errorMessage);
   });
 });

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { userTypes } from '../types/user';
 
 const registerSchema = z.object({
   name: z.string().trim().min(1),
@@ -11,6 +12,7 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Must contain at least one digit (0-9)')
     .regex(/[a-z]/, 'Must contain at least one lowercase letter (a-z)')
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter (A-Z)'),
+  type: z.enum(userTypes),
 });
 
 export default registerSchema;

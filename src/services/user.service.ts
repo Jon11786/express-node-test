@@ -9,6 +9,7 @@ export async function create(input: NewUser): Promise<CreatedUser> {
     name: input.name,
     email: input.email,
     password: passwordHash,
+    type: input.type,
   };
 
   const createdUser = await createUser(user);

@@ -8,7 +8,8 @@ db.exec(`
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        type TEXT NOT NULL
     );
     CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users(email);
 `);
