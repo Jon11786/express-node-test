@@ -1,5 +1,5 @@
 import {
-  describe, it, expect, beforeAll, afterAll,
+  describe, it, expect, beforeAll, afterAll, test,
 } from 'vitest';
 import superagent from 'superagent';
 import { Server } from 'node:net';
@@ -22,7 +22,7 @@ describe('POST /register', () => {
   });
 
   it('returns 201 and created user', async () => {
-    const payload = { name: 'Jeff', email: 'jeff@example.com', password: '123' };
+    const payload = { name: 'Jeff', email: 'jeff@example.com', password: '1234abcdT' };
 
     const response = await superagent
       .post(`${baseUrl}/register`)
@@ -43,7 +43,8 @@ describe('POST /register', () => {
     const response = await superagent
       .post(`${baseUrl}/register`)
       .set('Content-Type', 'application/json')
-      .send('{name:');
+      .send('{name:')
+      .ok(() => true);
 
     expect(response.status).toBe(400);
   });
@@ -52,18 +53,23 @@ describe('POST /register', () => {
     const response = await superagent
       .post(`${baseUrl}/register`)
       .set('Content-Type', 'xml/json')
-      .send('<user><name>Jeff</name><email>jeff@example.com</email><password>123</password></user>');
+      .send('<user><name>Jeff</name><email>jeff@example.com</email><password>123</password></user>')
+      .ok(() => true);
 
     expect(response.status).toBe(415);
   });
 
-  it('returns 422 on missing data', async () => {
-    const payload = { name: '', email: 'not-an-email', password: '1' };
+  const cases: [string, any][] = [
+    ['missing name', { email: 'x@example.com', password: 'Abcdefg1' }],
+    ['bad email', { name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1' }],
+    ['weak password', { name: 'Jeff', email: 'j@example.com', password: 'abc' }],
+  ];
 
+  test.each(cases)('%s returns status 422', async (_label, payload) => {
     const response = await superagent
       .post(`${baseUrl}/register`)
       .set('Content-Type', 'application/json')
-      .send(payload);
+      .send(payload).ok(() => true);
 
     expect(response.status).toBe(422);
   });

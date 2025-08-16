@@ -1,9 +1,8 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { register } from '../controllers/register.controller';
 
 const router = Router();
 
-router.post('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+router.post('/', register);
 
 export default router;
