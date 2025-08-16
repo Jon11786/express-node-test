@@ -1,6 +1,6 @@
 import { hash } from 'argon2';
 import { CreatedUser, NewUser } from '../types/user';
-import { createUser } from '../repositories/user.repository';
+import { createUser, findById } from '../repositories/user.repository';
 
 export async function create(input: NewUser): Promise<CreatedUser> {
   const passwordHash = await hash(input.password);
@@ -16,7 +16,7 @@ export async function create(input: NewUser): Promise<CreatedUser> {
   return createdUser;
 }
 
-export async function findById(id: number): Promise<CreatedUser> {
+export async function findUserById(id: number): Promise<CreatedUser | null> {
   const user = findById(id);
   return user;
 }

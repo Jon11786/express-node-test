@@ -26,7 +26,7 @@ describe('POST /register', () => {
 
   it('returns 201 and created user', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: faker.internet.password(), type: 'student',
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student',
     };
 
     const response = await superagent
@@ -93,5 +93,25 @@ describe('POST /register', () => {
     expect(response.status).toBe(422);
     expect(response.body.errors).toBeDefined();
     expect(response.body.errors[0].message).toBe(errorMessage);
+  });
+
+  it('returns 422 on existing email', async () => {
+    const payload = {
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student',
+    };
+
+    const insertStatement = db.prepare('INSERT INTO users (name, email, password, type) VALUES (@name, @email, @password, @type) RETURNING id, name, email, type');
+
+    insertStatement.get(payload);
+
+    const response = await superagent
+      .post(`${baseUrl}/register`)
+      .set('Content-Type', 'application/json')
+      .send(payload)
+      .ok(() => true);
+
+    expect(response.status).toBe(422);
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe('Invalid registration data.');
   });
 });

@@ -1,9 +1,8 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { get } from '../controllers/user.controller';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+router.get('/:id', get);
 
 export default router;
