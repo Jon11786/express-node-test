@@ -14,8 +14,6 @@ export async function create(input: NewUser): Promise<CreatedUser> {
     created: input.created,
   };
 
-  logger.info(user);
-
   const createdUser = await createUser(user);
   return createdUser;
 }
