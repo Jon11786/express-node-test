@@ -10,6 +10,7 @@ export async function create(input: NewUser): Promise<CreatedUser> {
     email: input.email,
     password: passwordHash,
     type: input.type,
+    created: input.created,
   };
 
   const createdUser = await createUser(user);
@@ -17,6 +18,6 @@ export async function create(input: NewUser): Promise<CreatedUser> {
 }
 
 export async function findUserById(id: number): Promise<CreatedUser | null> {
-  const user = findById(id);
+  const user: Promise<CreatedUser | null> = findById(id);
   return user;
 }

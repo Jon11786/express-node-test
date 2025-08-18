@@ -7,6 +7,7 @@ export type NewUser = {
   email: string;
   password: string;
   type: UserType;
+  created: string
 };
 
 export type CreatedUser = {
@@ -14,4 +15,5 @@ export type CreatedUser = {
   name: string;
   email: string;
   type: UserType;
+  created: string
 };

@@ -26,7 +26,7 @@ describe('POST /register', () => {
 
   it('returns 201 and created user', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student',
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
     };
 
     const response = await superagent
@@ -41,10 +41,11 @@ describe('POST /register', () => {
       name: payload.name,
       email: payload.email,
       type: payload.type,
+      created: payload.created,
     });
     expect(response.body).not.toHaveProperty('password');
 
-    const row = db.prepare<{ id: number }, { id: number; name: string; email: string; password: string }>('SELECT id, name, email, password FROM users WHERE id = ?').get(response.body.id);
+    const row = db.prepare<{ id: number }, { id: number; password: string }>('SELECT id, password FROM users WHERE id = ?').get(response.body.id);
     expect(row).toBeDefined();
     expect(row!.password).not.toBe(payload.password);
     const verified = await verify(row!.password, payload.password);
@@ -72,15 +73,17 @@ describe('POST /register', () => {
   });
 
   const cases: [string, any, string][] = [
-    ['missing name', { email: 'x@example.com', password: 'Abcdefg1', type: 'student' }, 'Invalid input: expected string, received undefined'],
+    ['missing name', {
+      email: 'x@example.com', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
+    }, 'Invalid input: expected string, received undefined'],
     ['bad email', {
-      name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1', type: 'student',
+      name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
     }, 'Invalid email address'],
     ['weak password', {
-      name: 'Jeff', email: 'j@example.com', password: 'abc', type: 'student',
+      name: 'Jeff', email: 'j@example.com', password: 'abc', type: 'student', created: faker.date.anytime().toString(),
     }, 'Too small: expected string to have >=8 characters'],
     ['bad type', {
-      name: 'Jeff', email: 'j@example.com', password: 'Abcdefg1', type: 'baker',
+      name: 'Jeff', email: 'j@example.com', password: 'Abcdefg1', type: 'baker', created: faker.date.anytime().toString(),
     }, 'Invalid option: expected one of "student"|"teacher"|"parent"|"private_tutor"'],
   ];
 
@@ -97,10 +100,10 @@ describe('POST /register', () => {
 
   it('returns 422 on existing email', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student',
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
     };
 
-    const insertStatement = db.prepare('INSERT INTO users (name, email, password, type) VALUES (@name, @email, @password, @type) RETURNING id, name, email, type');
+    const insertStatement = db.prepare('INSERT INTO users (name, email, password, type, created) VALUES (@name, @email, @password, @type, @created) RETURNING id, name, email, type, created');
 
     insertStatement.get(payload);
 

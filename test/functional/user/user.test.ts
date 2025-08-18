@@ -26,10 +26,10 @@ describe('Get /user/:id', () => {
 
   it('returns 200 and returns user', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: faker.internet.password(), type: 'student',
+      name: faker.person.fullName(), email: faker.internet.email(), password: faker.internet.password(), type: 'student', created: faker.date.anytime().toString(),
     };
 
-    const insertStatement = db.prepare<NewUser, CreatedUser>('INSERT INTO users (name, email, password, type) VALUES (@name, @email, @password, @type) RETURNING id, name, email, type');
+    const insertStatement = db.prepare<NewUser, CreatedUser>('INSERT INTO users (name, email, password, type, created) VALUES (@name, @email, @password, @type, @created) RETURNING id, name, email, type, created');
 
     const user = insertStatement.get(payload);
 
@@ -42,6 +42,7 @@ describe('Get /user/:id', () => {
     expect(response.body.name).toBe(payload.name);
     expect(response.body.email).toBe(payload.email);
     expect(response.body.type).toBe(payload.type);
+    expect(response.body.created).toBe(payload.created);
   });
 
   it('returns 404 if user not found', async () => {
