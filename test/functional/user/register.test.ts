@@ -26,7 +26,7 @@ describe('POST /register', () => {
 
   it('returns 201 and created user', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toISOString(),
     };
 
     const response = await superagent
@@ -74,17 +74,20 @@ describe('POST /register', () => {
 
   const cases: [string, any, string][] = [
     ['missing name', {
-      email: 'x@example.com', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
+      email: 'x@example.com', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toISOString(),
     }, 'Invalid input: expected string, received undefined'],
     ['bad email', {
-      name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
+      name: 'Jeff', email: 'not-an-email', password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toISOString(),
     }, 'Invalid email address'],
     ['weak password', {
-      name: 'Jeff', email: 'j@example.com', password: 'abc', type: 'student', created: faker.date.anytime().toString(),
+      name: 'Jeff', email: 'j@example.com', password: 'abc', type: 'student', created: faker.date.anytime().toISOString(),
     }, 'Too small: expected string to have >=8 characters'],
     ['bad type', {
-      name: 'Jeff', email: 'j@example.com', password: 'Abcdefg1', type: 'baker', created: faker.date.anytime().toString(),
+      name: 'Jeff', email: 'j@example.com', password: 'Abcdefg1', type: 'baker', created: faker.date.anytime().toISOString(),
     }, 'Invalid option: expected one of "student"|"teacher"|"parent"|"private_tutor"'],
+    ['bad date', {
+      name: 'Jeff', email: 'x@example.com', password: 'Abcdefg1', type: 'student', created: 'foo',
+    }, 'Invalid ISO datetime'],
   ];
 
   test.each(cases)('%s returns status 422', async (_label, payload, errorMessage) => {
@@ -100,7 +103,7 @@ describe('POST /register', () => {
 
   it('returns 422 on existing email', async () => {
     const payload = {
-      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toString(),
+      name: faker.person.fullName(), email: faker.internet.email(), password: 'Abcdefg1', type: 'student', created: faker.date.anytime().toISOString(),
     };
 
     const insertStatement = db.prepare('INSERT INTO users (name, email, password, type, created) VALUES (@name, @email, @password, @type, @created) RETURNING id, name, email, type, created');

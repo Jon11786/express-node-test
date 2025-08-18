@@ -13,7 +13,7 @@ const registerSchema = z.object({
     .regex(/[a-z]/, 'Must contain at least one lowercase letter (a-z)')
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter (A-Z)'),
   type: z.enum(userTypes),
-  created: z.string().trim(),
+  created: z.iso.datetime({ offset: true }).transform((string) => new Date(string).toISOString()),
 });
 
 export default registerSchema;
