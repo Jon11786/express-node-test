@@ -1,9 +1,9 @@
 import { hash } from 'argon2';
 import { CreatedUser, NewUser } from '../types/user';
 import { createUser, findById } from '../repositories/user.repository';
-import logger from '../utils/logger';
 
 export async function create(input: NewUser): Promise<CreatedUser> {
+  // Simple Argon2 hashing of the password for security
   const passwordHash = await hash(input.password);
 
   const user: NewUser = {

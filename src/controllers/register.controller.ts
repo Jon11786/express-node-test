@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import RegisterSchema from '../validation/register.schema';
 import { create } from '../services/user.service';
 
+// Add this as you would expect more exports to be in here in a full application
 // eslint-disable-next-line import/prefer-default-export
 export async function register(req: Request, res: Response, next: NextFunction) {
   const parsedParams = RegisterSchema.safeParse(req.body);

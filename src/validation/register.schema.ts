@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { userTypes } from '../types/user';
 
+/**
+ * Schema for user registration validation.
+ * This schema ensures that the user provides a valid name, email, password, created and type.
+ * The password must meet specific complexity requirements.
+ */
 const registerSchema = z.object({
   name: z.string().trim().min(1),
   email: z.email(),

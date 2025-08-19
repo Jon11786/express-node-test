@@ -1,3 +1,7 @@
+/**
+ * Setting this from array so we can use the array values
+ * in the userType below to so they are never out of sync
+ */
 export const userTypes: string[] = ['student', 'teacher', 'parent', 'private_tutor'];
 
 export type UserType = (typeof userTypes)[number];

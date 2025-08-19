@@ -4,7 +4,7 @@ import register from './register.routes';
 
 const routes = Router();
 
-// mount each resource router on its path
+// Split routes into user and register incase we want different middlewares or logic in the future
 routes.use('/user', user);
 routes.use('/register', register);
 
