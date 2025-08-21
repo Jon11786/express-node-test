@@ -12,7 +12,12 @@ const methods = ['POST', 'PUT', 'PATCH', 'DELETE'];
  * @param next
  */
 function requireContentTypeJson(req: Request, res: Response, next: NextFunction) {
-  if (methods.indexOf(req.method) === -1 || !req.headers['content-length']) {
+    if (req.path === '/docs' || req.path === '/openapi.yaml')
+    {
+        return next();
+    }
+
+    if (methods.indexOf(req.method) === -1 || !req.headers['content-length']) {
     return next();
   }
   const ct = String(req.headers['content-type'] || '');
