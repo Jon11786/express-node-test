@@ -4,6 +4,7 @@ Brief explanation
 * Uses functional tests with supertest to test the endpoints
 * Followed TDD and created failing tests first before implementing the functionality followed by refactoring
 * Did not return the users password in any response from the api for security reasons
+* After running npm run dev you can find api docs at /docs for example http://localhost:3000/docs if hosted from port 3000
 
 Changes I would make with more time or for production
 * Would want some kind of oauth2 or JWT authentication token for the user endpoint
